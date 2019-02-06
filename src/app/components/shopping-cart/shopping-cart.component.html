@@ -1,0 +1,63 @@
+<form class="cart-container" [formGroup]="shoppingCartFG">
+    <div  class="addSection box" fxLayout="column wrap" fxLayoutAlign="space-around " >
+        <span class="title">
+          <h4>Add</h4>
+        </span>
+      <mat-form-field>
+            <mat-select placeholder="Name" formControlName="name" (selectionChange)="groceryHasChanged($event.value)">
+              <mat-option *ngFor="let item of inventoryItems" [value]="item">
+                  {{item.name}}
+                </mat-option>            
+            </mat-select>
+            <mat-error *ngIf="shoppingCartFG.get('name')?.invalid">Please select a grocery from the list</mat-error>            
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput type="number" placeholder="Qty" formControlName="qty" min="1" (change)="qtyHasChanged()">
+          <mat-error *ngIf="shoppingCartFG.get('fontSize')?.invalid">Minimum 1</mat-error>
+        </mat-form-field>
+         <mat-form-field>
+            <input matInput type="number" readonly placeholder="Price" formControlName="price">           
+          </mat-form-field>      
+          <div fxLayout="row wrap" fxLayoutAlign="flex-end" >
+              <button mat-stroked-button color="primary" [disabled]="!isFormValid" (click)="addGrocery()">Add</button>
+              <button mat-stroked-button color="warn" (click)="resetGroceryValue()">Cancel</button>
+          </div>
+          
+    </div>
+    <div  class="shoppingCartListSection box" fxLayout="column wrap" fxLayoutAlign="space-around " >
+        <span class="title">
+          <h4>Shopping Card</h4>
+        </span>         
+          <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="dataSource">    
+            <!-- Grocery Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef> Name </th>
+              <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+            </ng-container>
+            <!-- Qty Column -->
+            <ng-container matColumnDef="qty">
+                <th mat-header-cell *matHeaderCellDef> Qty </th>
+                <td mat-cell *matCellDef="let element"> {{element.qty}} </td>
+              </ng-container>                        
+            <!-- Price Column -->
+            <ng-container matColumnDef="totalPrice">
+                <th mat-header-cell *matHeaderCellDef> price </th>
+                <td mat-cell *matCellDef="let element"> {{element.totalPrice}} </td>
+              </ng-container>                        
+            <!-- Action Column -->
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let element"> 
+                    <button mat-icon-button color="warn" (click)="removeSelectedRows(element)">
+                    X
+                  </button></td>  
+              </ng-container>                                       
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+          <div fxLayout="column wrap" fxLayoutAlign="space-around flex-end" >
+               Total: {{getTotalCost() | currency}} 
+          </div>
+   </div>
+</form>
+
